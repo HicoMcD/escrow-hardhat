@@ -2,12 +2,17 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import deploy from './deploy';
 import Escrow from './Escrow';
+// import axios from 'axios';
+//json-server to be removed
+//npm install orbit-db ipfs-http-client
+
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 export async function approve(escrowContract, signer) {
   const approveTxn = await escrowContract.connect(signer).approve();
-  await approveTxn.wait();
+  const tx = await approveTxn.wait();
+  console.log(tx);
 }
 
 function App() {
@@ -29,9 +34,9 @@ function App() {
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
     const arbiter = document.getElementById('arbiter').value;
-    const value = ethers.BigNumber.from(document.getElementById('wei').value);
+    // const valueBN = ethers.BigNumber.from(document.getElementById('wei').value);
+    const value = ethers.utils.parseEther(document.getElementById('ether').value)
     const escrowContract = await deploy(signer, arbiter, beneficiary, value);
-
 
     const escrow = {
       address: escrowContract.address,
@@ -50,13 +55,30 @@ function App() {
       },
     };
 
+    // async function postData(url = 'http://localhost:3001/escrowContracts') {
+    //   const response = await fetch(url, {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json'
+    //     },
+    //     "contractAddress": JSON.stringify(escrowContract.address),
+    //     "deployerAddress": "deployer address"
+    //   })
+    //   console.log(response.json)
+    //   return response.json()
+    // }
+    // postData()
+    
+    console.log(escrowContract.address)
     setEscrows([...escrows, escrow]);
   }
 
   return (
     <>
+    <div className='wrapper'>
+    <h1>Escrow Contract</h1>
       <div className="contract">
-        <h1> New Contract </h1>
+        <h1> Deploy New Escrow Contract </h1>
         <label>
           Arbiter Address
           <input type="text" id="arbiter" />
@@ -68,8 +90,8 @@ function App() {
         </label>
 
         <label>
-          Deposit Amount (in Wei)
-          <input type="text" id="wei" />
+          Deposit Amount (in Ether)
+          <input type="text" id="ether" />
         </label>
 
         <div
@@ -93,6 +115,7 @@ function App() {
             return <Escrow key={escrow.address} {...escrow} />;
           })}
         </div>
+      </div>
       </div>
     </>
   );

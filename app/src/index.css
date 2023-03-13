@@ -1,7 +1,14 @@
 body {
-  background-color: #eee;
+  background-color: black;
   display: flex;
+  justify-content: center;
   font-family: 'Muli', sans-serif;
+}
+
+.wrapper {
+  border: black solid;
+  display: grid;
+  background-color: #eee;
 }
 
 .contract, .existing-contracts {
@@ -16,6 +23,7 @@ h1 {
   margin: 10px;
   padding: 10px;
   border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
 label {

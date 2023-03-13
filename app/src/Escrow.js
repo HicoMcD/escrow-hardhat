@@ -18,7 +18,7 @@ export default function Escrow({
         </li>
         <li>
           <div> Value </div>
-          <div> {value} </div>
+          <div> {value / 10**18} ETH </div>
         </li>
         <div
           className="button"
