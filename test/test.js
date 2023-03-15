@@ -6,7 +6,8 @@ describe('Escrow', function () {
   let depositor;
   let beneficiary;
   let arbiter;
-  const deposit = ethers.utils.parseEther('1');
+  let amount = ethers.utils.parseEther('1');
+  // const deposit = ethers.utils.parseEther('1');
   beforeEach(async () => {
     depositor = ethers.provider.getSigner(0);
     beneficiary = ethers.provider.getSigner(1);
@@ -15,8 +16,9 @@ describe('Escrow', function () {
     contract = await Escrow.deploy(
       arbiter.getAddress(),
       beneficiary.getAddress(),
+      amount,
       {
-        value: deposit,
+        value: amount,
       }
     );
     await contract.deployed();
@@ -24,7 +26,7 @@ describe('Escrow', function () {
 
   it('should be funded initially', async function () {
     let balance = await ethers.provider.getBalance(contract.address);
-    expect(balance).to.eq(deposit);
+    expect(balance).to.eq(amount);
   });
 
   describe('after approval from address other than the arbiter', () => {
@@ -39,7 +41,7 @@ describe('Escrow', function () {
       const approveTxn = await contract.connect(arbiter).approve();
       await approveTxn.wait();
       const after = await ethers.provider.getBalance(beneficiary.getAddress());
-      expect(after.sub(before)).to.eq(deposit);
+      expect(after.sub(before)).to.eq(amount);
     });
   });
 });
