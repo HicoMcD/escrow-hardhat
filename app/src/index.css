@@ -8,6 +8,8 @@ body {
 .wrapper {
   border: black solid;
   display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
   background-color: #eee;
 }
 
@@ -23,6 +25,7 @@ h1 {
   margin: 10px;
   padding: 10px;
   border-bottom: 1px solid #eee;
+  color: white;
   text-align: center;
 }
 

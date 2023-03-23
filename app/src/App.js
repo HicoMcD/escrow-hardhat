@@ -54,20 +54,6 @@ function App() {
         await approve(escrowContract, signer);
       },
     };
-
-    // async function postData(url = 'http://localhost:3001/escrowContracts') {
-    //   const response = await fetch(url, {
-    //     method: 'POST',
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     "contractAddress": JSON.stringify(escrowContract.address),
-    //     "deployerAddress": "deployer address"
-    //   })
-    //   console.log(response.json)
-    //   return response.json()
-    // }
-    // postData()
     
     console.log(escrowContract.address)
     setEscrows([...escrows, escrow]);
@@ -75,10 +61,10 @@ function App() {
 
   return (
     <>
-    <div className='wrapper'>
     <h1>Escrow Contract</h1>
+    <div className='wrapper'>
       <div className="contract">
-        <h1> Deploy New Escrow Contract </h1>
+        <h2> Deploy New Escrow Contract </h2>
         <label>
           Arbiter Address
           <input type="text" id="arbiter" />
@@ -108,7 +94,7 @@ function App() {
       </div>
 
       <div className="existing-contracts">
-        <h1> Existing Contracts </h1>
+        <h2> Existing Contracts </h2>
 
         <div id="container">
           {escrows.map((escrow) => {

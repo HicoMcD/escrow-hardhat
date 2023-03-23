@@ -1,3 +1,5 @@
+
+
 export default function Escrow({
   address,
   arbiter,
@@ -5,6 +7,9 @@ export default function Escrow({
   value,
   handleApprove,
 }) {
+
+  // const newAmount = document.getElementById('new-amount').value;
+
   return (
     <div className="existing-contract">
       <ul className="fields">
@@ -30,6 +35,13 @@ export default function Escrow({
           }}
         >
           Approve
+        </div>
+        <div>
+          <label>
+            New deposit Amount
+            <input type="text" id="new-amount"></input>
+            <div className="button">Submit New Amount</div>
+          </label>
         </div>
       </ul>
     </div>
