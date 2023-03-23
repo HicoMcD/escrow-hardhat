@@ -4,7 +4,7 @@ import deploy from './deploy';
 import Escrow from './Escrow';
 // import axios from 'axios';
 //json-server to be removed
-//npm install orbit-db ipfs-http-client
+//npm install orbit-db ipfs-http-client to uninstall
 
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
