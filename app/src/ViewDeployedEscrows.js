@@ -1,16 +1,55 @@
+import React, {useState, useEffect} from 'react';
 import { ethers } from 'ethers';
-import Escrow from './artifacts/contracts/Escrow.sol/Escrow';
+import EscrowABI from './artifacts/contracts/Escrow.sol/Escrow';
+import { Polybase } from "@polybase/client";
+import Escrow from './Escrow';
 
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 const ViewDeployedEscrows = () => {
-    // const provider = ethers.getDefaultProvider('http://localhost:8545')
+    const [records, setRecords] = useState();
+    const [mapRecords, setMapRecords] = useState([]);
 
-    // const contract = new ethers.Contract('0xf5f4f95a1e2c01e1c441c4360d5cb10b38bcbbe6', Escrow, provider)
-    // const contractInstance = contract.attach('0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e');
-    // console.log(contractInstance);
+
+    // const contractInstance = contract.attach('0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e')
+    // console.log(contractInstance)
+
+    const db = new Polybase({
+        defaultNamespace: "pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow", //"pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow",
+      });
+      const collectionReference = db.collection("AUEscrowTest");
+
+    useEffect(() => {
+        const getRecords = async() =>{
+            const records = await collectionReference.get();
+            setRecords(records.data)
+        }
+        getRecords()
+        if(records) {
+            displayRecords()
+            // setMapRecords
+        }
+    }, [])
+
+    const displayRecords = async () => {
+
+        await records.map((record) => {
+            const contract = new ethers.Contract(record.data.escrowAddress, EscrowABI.abi, provider)
+            // setMapRecords(record);
+            // <p>{record.data.id}</p>
+            console.log(contract)
+            console.log(Escrow)
+            // console.log(record.data.id)
+            // console.log(record.data.escrowAddress)
+            // console.log(record.data.deployerAddress)
+        })
+    }
 
     return (
-        <div>View Deployed Escrow Contracts</div>
+        <div>
+            View Deployed Escrow Contracts
+            <button onClick={displayRecords}>Click</button>
+        </div>
     )
 }
 

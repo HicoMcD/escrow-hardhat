@@ -2,8 +2,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import deploy from './deploy';
 import Escrow from './Escrow';
-import EscrowABI from './artifacts/contracts/Escrow.sol/Escrow';
-// import ViewDeployedEscrows from './ViewDeployedEscrows';
+import ViewDeployedEscrows from './ViewDeployedEscrows';
 import { Polybase } from "@polybase/client";
 // import axios from 'axios';
 
@@ -41,7 +40,7 @@ function App() {
     const escrowContract = await deploy(signer, arbiter, beneficiary, value);
 
     const escrow = {
-      address: '0xf5f4f95a1e2c01e1c441c4360d5cb10b38bcbbe6', //escrowContract.address,
+      address: escrowContract.address, //escrowContract.address,
       arbiter,
       beneficiary,
       value: value.toString(),
@@ -83,20 +82,6 @@ function App() {
     setEscrows([...escrows, escrow]);
   }
 
-  const contract = new ethers.Contract('0xf5f4f95a1e2c01e1c441c4360d5cb10b38bcbbe6', EscrowABI.abi, signer)
-  const contractInstance = contract.attach('0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e')
-  // console.log(contractInstance)
-
-  const Helper = async () => {
-    const arbiterC = await contractInstance.arbiter()
-    const arbiter = arbiterC.toString()
-    console.log(arbiter)
-
-    return(
-      <div>arbiter</div>
-    )
-  }
-  
 
   return (
     <>
@@ -130,17 +115,20 @@ function App() {
         >
           Deploy
         </div>
+
       </div>
 
       <div className="existing-contracts">
         <h2> Existing Contracts </h2>
-        {/* <ViewDeployedEscrows /> */}
+        <ViewDeployedEscrows />
 
-        {/* <div id="container">
-          {escrows.map((escrow) => {
+
+        <div id="container">
+
+          {/* {escrows.map((escrow) => {
             return <Escrow key={escrow.address} {...escrow} />;
-          })}
-        </div> */}
+          })} */}
+        </div>
       </div>
       </div>
     </>
