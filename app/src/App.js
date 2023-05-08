@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import deploy from './deploy';
 import Escrow from './Escrow';
-import ViewDeployedEscrows from './ViewDeployedEscrows';
+// import ViewDeployedEscrows from './ViewDeployedEscrows';
 import { Polybase } from "@polybase/client";
 // import axios from 'axios';
 
@@ -19,6 +19,8 @@ function App() {
   const [account, setAccount] = useState();
   const [signer, setSigner] = useState();
 
+  const [records, setRecords] = useState();
+
   useEffect(() => {
     async function getAccounts() {
       const accounts = await provider.send('eth_requestAccounts', []);
@@ -26,11 +28,50 @@ function App() {
       setAccount(accounts[0]);
       setSigner(provider.getSigner());
 
-
     }
 
     getAccounts();
   }, [account]);
+
+
+  useEffect(() => {
+
+    const db = new Polybase({
+      defaultNamespace: "pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow", //"pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow",
+    });
+    const collectionReference = db.collection("AUEscrowTest");
+
+    const getRecords = async() =>{
+        const records = await collectionReference.get();
+        setRecords(records.data)
+        console.log(records.data)
+      }
+      getRecords();
+
+    }, []);
+
+    // if(records) {
+      // console.log(records[0].data.deployerAddress);
+      const getRecords = () => {
+        
+      records.map((record) => {
+        // console.log(record.data);
+
+        const escrow = {
+          address: record.data.escrowAddress,
+          arbiter: record.data.arbiter,
+          beneficiary: record.data.beneficiary,
+          value: record.data.value,
+          id: record.data.id,
+          //handleApprove
+        }
+        setEscrows([...escrows, escrow]);
+        // console.log(escrow);
+
+      })
+    }
+
+    // }
 
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
@@ -67,19 +108,22 @@ function App() {
     const recordsLength = records.data.length;
     const lastRecord = records.data[recordsLength - 1]
     // console.log(lastRecord)
-    const lastRecordID = Number(lastRecord.data.id)
-    const newRecord = lastRecordID + 1;
+    // const lastRecordID = Number(lastRecord.data.id)
+    const newRecord = recordsLength + 1;
     const newRecordID = String(newRecord);
 
     const recordData = await collectionReference.create([
       newRecordID,
       account.toString(),
-      escrowContract.address.toString()
+      escrowContract.address.toString(),
+      arbiter,
+      beneficiary,
+      document.getElementById('ether').value,
       ])
 
     console.log(recordData);
     console.log(escrowContract.address)
-    setEscrows([...escrows, escrow]);
+    // setEscrows([...escrows, escrow]);
   }
 
 
@@ -120,14 +164,15 @@ function App() {
 
       <div className="existing-contracts">
         <h2> Existing Contracts </h2>
-        <ViewDeployedEscrows />
+        {/* <ViewDeployedEscrows /> */}
+        <button onClick={getRecords}>Get Records</button>
 
 
         <div id="container">
 
-          {/* {escrows.map((escrow) => {
+          {escrows.map((escrow) => {
             return <Escrow key={escrow.address} {...escrow} />;
-          })} */}
+          })}
         </div>
       </div>
       </div>

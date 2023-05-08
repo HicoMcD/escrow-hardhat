@@ -25,30 +25,67 @@ const ViewDeployedEscrows = () => {
             setRecords(records.data)
         }
         getRecords()
-        if(records) {
-            displayRecords()
-            // setMapRecords
-        }
+        // console.log(records)
+        // if(records) {
+        // showRecords()
+        // }
     }, [])
 
     const displayRecords = async () => {
 
         await records.map((record) => {
-            const contract = new ethers.Contract(record.data.escrowAddress, EscrowABI.abi, provider)
+            // const contract = new ethers.Contract(record.data.escrowAddress, EscrowABI.abi, provider);
+
+
+        // const escrow = {
+        //     address: record.data.escrowAddress, //escrowContract.address,
+        //     arbiter,
+        //     beneficiary,
+        //     value: value.toString(),
+        //     handleApprove: async () => {
+        //     escrowContract.on('Approved', () => {
+        //         document.getElementById(escrowContract.address).className =
+        //         'complete';
+        //         document.getElementById(escrowContract.address).innerText =
+        //         "✓ It's been approved!";
+        //     });
+    
+        //     await approve(escrowContract, signer);
+        //     },
+        // };
+
+            // setMapRecords(contract);
             // setMapRecords(record);
             // <p>{record.data.id}</p>
-            console.log(contract)
-            console.log(Escrow)
-            // console.log(record.data.id)
-            // console.log(record.data.escrowAddress)
-            // console.log(record.data.deployerAddress)
+            // console.log(mapRecords)
+            // console.log(Escrow)
+            console.log(record.data.id)
+            console.log(record.data.escrowAddress)
+            console.log(record.data.deployerAddress)
+
+            // return(
+            //     <>
+            //     <div>{record.data.id}</div>
+            //     <div>{record.data.escrowAddress}</div>
+            //     </>
+            // )
+
         })
+
     }
+
+    // const showRecords = () => {
+    //     if(mapRecords) {
+    //         console.log(mapRecords)
+    //     }
+    // }
 
     return (
         <div>
             View Deployed Escrow Contracts
-            <button onClick={displayRecords}>Click</button>
+            <button onClick={displayRecords} >Click</button>
+            {/* {showRecords} */}
+            
         </div>
     )
 }

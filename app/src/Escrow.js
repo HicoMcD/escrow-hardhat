@@ -5,6 +5,7 @@ export default function Escrow({
   arbiter,
   beneficiary,
   value,
+  id,
   handleApprove,
 }) {
 
@@ -13,6 +14,8 @@ export default function Escrow({
   return (
     <div className="existing-contract">
       <ul className="fields">
+      <label>ID: {id}</label>
+
         <li>
           <div> Arbiter </div>
           <div> {arbiter} </div>
