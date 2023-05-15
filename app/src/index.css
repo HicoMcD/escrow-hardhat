@@ -1,45 +1,65 @@
 body {
-  background-color: black;
+  background-color: #161515;
   display: flex;
-  justify-content: center;
   font-family: 'Muli', sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-.wrapper {
-  border: black solid;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+
+.contract-wrapper {
+  display: flex;
   align-items: center;
-  background-color: #eee;
+  justify-content: center;
+  background-color: #070707;
+  position: sticky;
+  top: 0;
+  left: 0; 
+  z-index: 1;
 }
 
-.contract, .existing-contracts {
+.header {
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.contract {
+  margin: 10px;
+  padding: 10px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.existing-contracts {
   margin: 20px;
-  display: inline-block;
   padding: 40px;
-  border: 1px solid #ddd;
-  background-color: #fff;
+  background-color: #474545;
+  text-align: center;
 }
 
 h1 {
   margin: 10px;
   padding: 10px;
   border-bottom: 1px solid #eee;
-  color: white;
-  text-align: center;
 }
 
 label {
+  
   display: flex;
   flex-direction: column;
   text-transform: uppercase;
   color: #aaa;
-  margin: 20px;
+  margin: 5px;
 }
 
 input[type="text"] {
   padding: 6px;
   font-size: 18px;
+}
+
+.button-wrapper {
+  display: inline-block;
 }
 
 .button {
@@ -53,6 +73,22 @@ input[type="text"] {
   font-size: 14px;
   letter-spacing: 1px;
   cursor: pointer;
+  width: 200px;
+  
+}
+
+.connect-btn {
+  background-color: #0059ff;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  margin: 20px;
+  padding: 9px 25px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  width: 200px;
+  
 }
 
 .existing-contract ul {
@@ -63,7 +99,6 @@ input[type="text"] {
 
 .existing-contract ul > li {
   list-style: none;
-  display: flex;
   margin: 10px;
 }
 
@@ -78,4 +113,51 @@ input[type="text"] {
 .existing-contract .complete {
   color: #5aa75a;
   text-align: center;
+}
+
+@media only screen and (max-width: 600px) {
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .contract-wrapper {
+    display: inline-block;
+    position: relative;
+
+  }
+
+  .contract {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+  }
+  .existing-contracts {
+    margin: 10px;
+    padding: 0px;
+  }
+
+  .existing-contracts-wrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .li {
+    color: blue;
+  }
+
+  .existing-contract ul > li > div {
+    overflow:scroll;
+  }
+
+  .button {
+    width: 100px;
+  }
+
+  .wallet-address {
+    overflow: scroll;
+  }
+
 }

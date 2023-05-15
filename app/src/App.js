@@ -2,86 +2,109 @@ import { ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import deploy from './deploy';
 import Escrow from './Escrow';
-// import ViewDeployedEscrows from './ViewDeployedEscrows';
 import { Polybase } from "@polybase/client";
-// import axios from 'axios';
+import { useAuth } from "@polybase/react";
+
+import EscrowABI from './artifacts/contracts/Escrow.sol/Escrow';
+
+const db = new Polybase({
+  defaultNamespace: "pk/0x8318535b54105d4a7aae60c08fc45f9687181b4fdfc625bd1a753fa7397fed753547f11ca8696646f2f3acb08e31016afac23e630c5d11f59f61fef57b0d2aa5/Escrow" //process.env.ESCROW_REACT_NAMESPACE, //
+});
+const collectionReference = db.collection("AUEscrowTT");
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-export async function approve(escrowContract, signer) {
+export async function approve(escrowContract, signer, id) {
   const approveTxn = await escrowContract.connect(signer).approve();
   const tx = await approveTxn.wait();
-  console.log(tx);
+  await db.collection("AUEscrowTT").record(id).call("updateIsApproved", []) 
+  
+  console.log(tx)
 }
 
 function App() {
+  const { auth } = useAuth()
+
   const [escrows, setEscrows] = useState([]);
   const [account, setAccount] = useState();
   const [signer, setSigner] = useState();
 
-  const [records, setRecords] = useState();
+  const sign = db.signer(async (data) => {
+    return {
+      h: 'eth-personal-sign',
+      sig: await auth.ethPersonalSign(data),
+    }
+  })
 
-  useEffect(() => {
-    async function getAccounts() {
-      const accounts = await provider.send('eth_requestAccounts', []);
+  const connectWallet = async () => {
+    const accounts = await provider.send('eth_requestAccounts', []);
 
+    setAccount(accounts[0]);
+    setSigner(provider.getSigner());
+  }
+
+  window.ethereum.on('accountsChanged', handleAccountsChanged);
+
+  function handleAccountsChanged(accounts) {
+    if (accounts.length === 0) {
+      console.log('Please connect to MetaMask.');
+    } else if (accounts[0] !== account) {
       setAccount(accounts[0]);
-      setSigner(provider.getSigner());
-
     }
-
-    getAccounts();
-  }, [account]);
-
-
+  }
+  
   useEffect(() => {
+    const getRecords = async() => {
+      const data = await collectionReference.get();
+      const records = data.data;
 
-    const db = new Polybase({
-      defaultNamespace: "pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow", //"pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow",
-    });
-    const collectionReference = db.collection("AUEscrowTest");
+      const tempRecords = records.map((record, index) => {
 
-    const getRecords = async() =>{
-        const records = await collectionReference.get();
-        setRecords(records.data)
-        console.log(records.data)
-      }
-      getRecords();
+        const contract = new ethers.Contract(record.data.escrowAddress, EscrowABI.abi, provider.getSigner())
 
-    }, []);
+          const escrow = {
+            address: record.data.escrowAddress,
+            arbiter: record.data.arbiter,
+            beneficiary: record.data.beneficiary,
+            value: record.data.value,
+            id: record.data.id,     
+            isApproved: record.data.isApproved.toString(),
+            handleApprove: async () => {
+                contract.on('Approved', () => {
+                  document.getElementById(contract.address).className =
+                  'complete';
+                  document.getElementById(contract.address).innerText =
+                  "✓ It's been approved!";
+                });
 
-    // if(records) {
-      // console.log(records[0].data.deployerAddress);
-      const getRecords = () => {
-        
-      records.map((record) => {
-        // console.log(record.data);
+              await approve(contract, provider.getSigner(), record.data.id, sign);
 
-        const escrow = {
-          address: record.data.escrowAddress,
-          arbiter: record.data.arbiter,
-          beneficiary: record.data.beneficiary,
-          value: record.data.value,
-          id: record.data.id,
-          //handleApprove
+            },      
         }
-        setEscrows([...escrows, escrow]);
-        // console.log(escrow);
 
-      })
+        return escrow
+      });
+      
+      setEscrows(tempRecords);
     }
 
-    // }
+    getRecords()
+  }, [sign])
 
   async function newContract() {
     const beneficiary = document.getElementById('beneficiary').value;
     const arbiter = document.getElementById('arbiter').value;
-    // const valueBN = ethers.BigNumber.from(document.getElementById('wei').value);
-    const value = ethers.utils.parseEther(document.getElementById('ether').value)
-    const escrowContract = await deploy(signer, arbiter, beneficiary, value);
+    const value = ethers.utils.parseEther(document.getElementById('ether').value); 
+    let escrowContract
+
+    if(!signer) {
+      alert('Connect Wallet')
+    } else {
+      escrowContract = await deploy(signer, arbiter, beneficiary, value);
+    }
 
     const escrow = {
-      address: escrowContract.address, //escrowContract.address,
+      address: escrowContract.address,
       arbiter,
       beneficiary,
       value: value.toString(),
@@ -93,46 +116,49 @@ function App() {
             "✓ It's been approved!";
         });
 
-        await approve(escrowContract, signer);
+        await approve(escrowContract, signer, newRecordID, sign);
       },
     };
-    // console.log(escrow)
 
-    const db = new Polybase({
-      defaultNamespace: "pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow", //"pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow",
-    });
-    const collectionReference = db.collection("AUEscrowTest");
+    //Polybase
 
-    const records = await collectionReference.get();
-    // console.log(records.data.length);
+    db.signer(async (data) => {
+      return {
+        h: 'eth-personal-sign',
+        sig: await auth.ethPersonalSign(data),
+      }
+    })
+
+    const records = await collectionReference.get()
     const recordsLength = records.data.length;
-    const lastRecord = records.data[recordsLength - 1]
-    // console.log(lastRecord)
-    // const lastRecordID = Number(lastRecord.data.id)
     const newRecord = recordsLength + 1;
     const newRecordID = String(newRecord);
 
-    const recordData = await collectionReference.create([
+    await collectionReference.create([
       newRecordID,
-      account.toString(),
       escrowContract.address.toString(),
+      account.toString(),
       arbiter,
       beneficiary,
-      document.getElementById('ether').value,
+      value.toString(),
+      false
       ])
 
-    console.log(recordData);
-    console.log(escrowContract.address)
-    // setEscrows([...escrows, escrow]);
+    setEscrows([...escrows, escrow]);
   }
-
 
   return (
     <>
-    <h1>Escrow Contract</h1>
     <div className='wrapper'>
+    <div className='contract-wrapper'>
+
+      <div className='header'>
+        <h1> Deploy New Escrow Contract </h1>
+        <div className='wallet-address'>Wallet Address <strong>{account}</strong></div>
+        <div></div>
+        <button className='connect-btn' onClick={connectWallet}>Connect Wallet</button>
+      </div>
       <div className="contract">
-        <h2> Deploy New Escrow Contract </h2>
         <label>
           Arbiter Address
           <input type="text" id="arbiter" />
@@ -144,7 +170,7 @@ function App() {
         </label>
 
         <label>
-          Deposit Amount (in Ether)
+          Deposit Amount (in ETH)
           <input type="text" id="ether" />
         </label>
 
@@ -159,21 +185,19 @@ function App() {
         >
           Deploy
         </div>
-
+      </div>
       </div>
 
+      <div className="existing-contracts-wrapper">
       <div className="existing-contracts">
-        <h2> Existing Contracts </h2>
-        {/* <ViewDeployedEscrows /> */}
-        <button onClick={getRecords}>Get Records</button>
-
+        <h1 style={{'color': 'white'}}> Deployed Escrow Contracts </h1>
 
         <div id="container">
-
           {escrows.map((escrow) => {
             return <Escrow key={escrow.address} {...escrow} />;
           })}
         </div>
+      </div>
       </div>
       </div>
     </>

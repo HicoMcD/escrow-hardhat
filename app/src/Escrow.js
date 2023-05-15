@@ -1,21 +1,57 @@
 
-
 export default function Escrow({
   address,
   arbiter,
   beneficiary,
   value,
-  id,
   handleApprove,
+  id,
+  isApproved,
 }) {
 
-  // const newAmount = document.getElementById('new-amount').value;
+const createHtml = () => {
+  if(isApproved === 'true') {
+
+    return (
+      <div  
+        className="complete"
+        id={address}
+        > 
+          ✓ It's been approved!
+      </div>
+    )
+  } else {
+
+    return (
+      <div className="button-wrapper">
+      <div
+          className="button"
+          id={address}
+          onClick={(e) => {
+            e.preventDefault();
+
+            handleApprove();
+
+          }}
+        >
+          Approve
+        </div>
+        </div>
+    )
+  }
+}
 
   return (
     <div className="existing-contract">
       <ul className="fields">
-      <label>ID: {id}</label>
-
+        <li>
+          <div>Escrow ID</div>
+          <div>{id}</div>
+        </li>
+        <li>
+          <div>Escrow Address</div>
+          <div>{address}</div>
+        </li>
         <li>
           <div> Arbiter </div>
           <div> {arbiter} </div>
@@ -28,24 +64,12 @@ export default function Escrow({
           <div> Value </div>
           <div> {value / 10**18} ETH </div>
         </li>
-        <div
-          className="button"
-          id={address}
-          onClick={(e) => {
-            e.preventDefault();
-
-            handleApprove();
-          }}
-        >
-          Approve
-        </div>
-        <div>
-          <label>
-            New deposit Amount
-            <input type="text" id="new-amount"></input>
-            <div className="button">Submit New Amount</div>
-          </label>
-        </div>
+        {/* <li>
+          <div>Has Escrow been approved </div>
+          <div>{isApproved === 'true' ? <h3 style={{'backgroundColor': 'green', 'fontWeight': 'bold', 'height': '', 'margin': '10px 200px' }}>APPROVED</h3> : <h3 style={{'backgroundColor': 'red', 'fontWeight': 'bold', 'height': '', 'margin': '10px 200px' }}>NOT APPROVED</h3>}</div>
+        </li> */}
+        {createHtml()}
+  
       </ul>
     </div>
   );

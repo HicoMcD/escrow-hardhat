@@ -1,8 +1,19 @@
-import React from 'react';
+// import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import * as React from "react";
+import { Auth } from '@polybase/auth'
+import { Polybase } from "@polybase/client";
+import { PolybaseProvider, AuthProvider } from "@polybase/react";
+
+// Polybase
+const polybase = new Polybase({
+  defaultNamespace: "pk/0xeacdb8bef7017928330ea0d5950080bca7b0a6227d33dab282191214f6098a2cc1a0c62d4d3cc6200e07b69039ed696c5633af8d87fab94575beb054acdd20db/Escrow" //process.env.ESCROW_REACT_NAMESPACE //, 
+});
+
+const auth = new Auth()
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -15,7 +26,11 @@ if (!window.ethereum) {
 } else {
   root.render(
     <React.StrictMode>
-      <App />
+      <PolybaseProvider polybase={polybase}>
+      <AuthProvider auth={auth} polybase={polybase}>
+            <App />
+      </AuthProvider>
+      </PolybaseProvider>
     </React.StrictMode>
   );
 }
