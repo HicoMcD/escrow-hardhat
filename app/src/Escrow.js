@@ -64,10 +64,7 @@ const createHtml = () => {
           <div> Value </div>
           <div> {value / 10**18} ETH </div>
         </li>
-        {/* <li>
-          <div>Has Escrow been approved </div>
-          <div>{isApproved === 'true' ? <h3 style={{'backgroundColor': 'green', 'fontWeight': 'bold', 'height': '', 'margin': '10px 200px' }}>APPROVED</h3> : <h3 style={{'backgroundColor': 'red', 'fontWeight': 'bold', 'height': '', 'margin': '10px 200px' }}>NOT APPROVED</h3>}</div>
-        </li> */}
+        
         {createHtml()}
   
       </ul>

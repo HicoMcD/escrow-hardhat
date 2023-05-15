@@ -6,7 +6,6 @@ body {
   flex-direction: column;
 }
 
-
 .contract-wrapper {
   display: flex;
   align-items: center;
@@ -45,7 +44,6 @@ h1 {
 }
 
 label {
-  
   display: flex;
   flex-direction: column;
   text-transform: uppercase;

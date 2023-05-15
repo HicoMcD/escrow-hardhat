@@ -121,7 +121,6 @@ function App() {
     };
 
     //Polybase
-
     db.signer(async (data) => {
       return {
         h: 'eth-personal-sign',
