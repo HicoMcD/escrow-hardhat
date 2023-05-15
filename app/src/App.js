@@ -10,14 +10,14 @@ import EscrowABI from './artifacts/contracts/Escrow.sol/Escrow.json';
 const db = new Polybase({
   defaultNamespace: "pk/0x8318535b54105d4a7aae60c08fc45f9687181b4fdfc625bd1a753fa7397fed753547f11ca8696646f2f3acb08e31016afac23e630c5d11f59f61fef57b0d2aa5/Escrow" //process.env.ESCROW_REACT_NAMESPACE, //
 });
-const collectionReference = db.collection("AUEscrowTT");
+const collectionReference = db.collection("AUEscrowProject");
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 export async function approve(escrowContract, signer, id) {
   const approveTxn = await escrowContract.connect(signer).approve();
   const tx = await approveTxn.wait();
-  await db.collection("AUEscrowTT").record(id).call("updateIsApproved", []) 
+  await db.collection("AUEscrowProject").record(id).call("updateIsApproved", []) 
   
   console.log(tx)
 }
