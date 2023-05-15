@@ -5,7 +5,7 @@ import Escrow from './Escrow';
 import { Polybase } from "@polybase/client";
 import { useAuth } from "@polybase/react";
 
-import EscrowABI from './artifacts/contracts/Escrow.sol/Escrow';
+import EscrowABI from './artifacts/contracts/Escrow.sol/Escrow.json';
 
 const db = new Polybase({
   defaultNamespace: "pk/0x8318535b54105d4a7aae60c08fc45f9687181b4fdfc625bd1a753fa7397fed753547f11ca8696646f2f3acb08e31016afac23e630c5d11f59f61fef57b0d2aa5/Escrow" //process.env.ESCROW_REACT_NAMESPACE, //
